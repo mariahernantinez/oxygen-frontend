@@ -42,7 +42,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v1
         with:
           appSourcePath: ${{ github.workspace }}
-          acrName: acroxygenprd
-          containerAppName: ca-oxygen-prd
+          acrName: acrmuoxygenprd
+          containerAppName: ca-muoxygen-frontend-prd
           resourceGroup: rg-oxygen-prd
-          imageToBuild: acroxygenprd.azurecr.io/oxygen/frontend:${{ github.run_id }}.${{ github.run_attempt }}
+          imageToBuild: acrmuoxygenprd.azurecr.io/oxygen/frontend:${{ github.run_id }}.${{ github.run_attempt }}
