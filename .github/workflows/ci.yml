@@ -2,26 +2,34 @@ name: Frontend CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  build-and-test:
+  build-test-deploy:
+    environment: prd
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Chekout repo
         uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Setup Node.js 
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
+        
       - name: Install dependencies
-        run: npm ci
-
+        run: npm ci 
+      
       - name: Run tests
         run: npm test -- --watchAll=false
 
@@ -30,8 +38,21 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
-        with:
+        with: 
           name: frontend-build
           path: build/
           retention-days: 7
-  
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          acrName: acrmuoxygenprd
+          containerAppName: ca-muoxygen-frontend-prd
+          resourceGroup: rg-oxygen-prd
+          imageToBuild: acrmuoxygenprd.azurecr.io/oxygen/frontend:${{ github.run_id }}.${{ github.run_attempt }}
