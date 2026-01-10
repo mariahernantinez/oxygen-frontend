@@ -14,9 +14,9 @@ jobs:
     steps:
       - name: Chekout repo
         uses: actions/checkout@v4
-        with:
+        with: 
           fetch-depth: 0
-      
+
       - name: SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
@@ -42,4 +42,17 @@ jobs:
           name: frontend-build
           path: build/
           retention-days: 7
-  
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          acrName: acroxygenprd
+          containerAppName: ca-oxygen-prd
+          resourceGroup: rg-oxygen-prd
+          imageToBuild: acroxygenprd.azurecr.io/oxygen/frontend:${{ github.run_id }}.${{ github.run_attempt }}
