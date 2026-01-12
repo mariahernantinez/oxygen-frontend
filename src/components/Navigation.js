@@ -20,7 +20,7 @@ const Navigation = () => {
   return (
     <Navbar bg="success" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">TuHuellaActualizada</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">TuHuella</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
